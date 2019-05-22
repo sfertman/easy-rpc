@@ -7,7 +7,6 @@
 (defn -main
   [& args]
   (server/run-server!)
-  (client/init!)
   (let [mylib-rpc client/rpc-call]
     (println "(mylib/minus 3 4) => " (mylib/minus 3 4))
     (println "(mylib-rpc 'minus 3 4) => " (mylib-rpc 'minus 3 4))
