@@ -14,7 +14,7 @@
   (let [ns-name (:ns config)
         api (ns-publics (symbol ns-name))]
     (assoc config
-      :api (assoc api (symbol "get-api-spec") (fn [] {:ns ns-name :api (keys api)}))
+      :api api
       :rpc-handler on-message)))
 
 (defn start
