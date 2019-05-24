@@ -5,8 +5,9 @@
 (defn on-message
   "Handles message by calling the api function"
   [server [f-name args]]
-  (let [f (get (:api server) (symbol f-name))]
-    (apply f args)))
+  (if-let [f (get (:api server) (symbol f-name))]
+    (apply f args)
+    (throw (NullPointerException. (str "Function " f-name " is not defined!")))))
 
 (defn create-server
   "Returns an rpc server config with lib functions attached"

@@ -12,4 +12,9 @@
         result (-> @(http/post (url config)
                                {:as :stream
                                 :body payload}))]
-    (util/deserialize (.bytes (:body result)))))
+    (when (= 500 (:status result))
+      (throw (RuntimeException.
+        (str {
+          :payload msg
+          :error (-> result :body .bytes util/deserialize)}))))
+      (util/deserialize (.bytes (:body result)))))
