@@ -1,13 +1,12 @@
 (ns example.client
   (:require
+    [clojure.edn :as edn]
     [easy-rpc.client :as rpc-client]))
 
-(def client-config {
-  :host "localhost"
-  :transport :http ;; only :http supported for now (ignored)
-  :port 3101})
+(def rpc-config
+  (-> "./src/example/rpc-config.edn" slurp edn/read-string))
 
-(def client (rpc-client/create-client client-config))
+(def client (rpc-client/create-client rpc-config))
 
 (defn rpc-call
   [& args]

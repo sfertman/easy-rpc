@@ -1,12 +1,10 @@
 (ns example.server
   (:require
+    [clojure.edn :as edn]
     [easy-rpc.server :as rpc]))
 
-(def server-config {
-  :ns "example.mylib"
-  :host "localhost"
-  :transport :http ;; only :http supported for now (ignored)
-  :port 3101})
+(def rpc-config
+  (-> "./src/example/rpc-config.edn" slurp edn/read-string))
 
 (def server (atom nil))
 
@@ -15,4 +13,4 @@
   (reset!
     server
     (rpc/start
-      (rpc/create-server server-config))))
+      (rpc/create-server rpc-config))))

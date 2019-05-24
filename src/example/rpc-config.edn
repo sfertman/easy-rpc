@@ -1,0 +1,4 @@
+{:ns "example.mylib"
+ :host "localhost"
+ :transport :http ;; only :http supported for now (ignored)
+ :port 3101}
