@@ -3,7 +3,7 @@
     [easy-rpc.http.server :as http-server]))
 
 (defn on-message
-  "Handles message by calling the api function"
+  "Handles message by calling the api function. Throws NullPointerException if function f-name is not found in the rpc namespace."
   [server [f-name args]]
   (if-let [f (get (:api server) (symbol f-name))]
     (apply f args)
