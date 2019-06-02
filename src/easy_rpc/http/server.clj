@@ -2,8 +2,9 @@
   (:require
     [clojure.edn :as edn]
     [clojure.java.io :as io]
-    [org.httpkit.server :as http]
+    [easy-rpc.http.web :as web]
     [easy-rpc.util :as util]
+    [org.httpkit.server :as http]
     [reitit.ring :as ring]))
 
 (defn api
@@ -20,9 +21,11 @@
                                .bytes
                                bytes->str
                                edn/read-string
+                               web/decode-bytes
                                rpc-handler
                                str)}
                     (catch Throwable e
+                      ; (clojure.pprint/pprint e)
                       {:status 500
                        :body (-> e str)}))))}}]
           [ "/"
