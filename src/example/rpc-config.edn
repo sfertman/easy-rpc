@@ -1,4 +1,11 @@
-{:ns "example.mylib"
- :host "localhost"
- :transport :http ;; only :http supported for now (ignored)
- :port 3101}
+{
+  :http {
+    :ns "example.mylib"
+    :host "localhost"
+    :transport :http
+    :port 3101}
+  :web {
+    :ns "example.mylib"
+    :host "localhost"
+    :transport :web
+    :port 3102}}
