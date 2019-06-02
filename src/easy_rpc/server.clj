@@ -1,6 +1,7 @@
 (ns easy-rpc.server
   (:require
-    [easy-rpc.http.server :as http-server]))
+    [easy-rpc.http.server :as http-server]
+    [easy-rpc.web.server :as web-server]))
 
 (defn on-message
   "Handles message by calling the api function. Throws NullPointerException if function f-name is not found in the rpc namespace."
@@ -21,7 +22,11 @@
 (defn start
   "Returns a started ring server; takes rpc server config"
   [server]
-  (http-server/start server))
+  (cond
+    (= :http (:transport server))
+      (http-server/start server)
+    (= :web (:transport server))
+      (web-server/start server)))
 
 #_(defn stop!
   "Returns nil; takes a server and stops it"
