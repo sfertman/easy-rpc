@@ -1,6 +1,4 @@
-(ns easy-rpc.http.web
-  (:require
-    [clojure.walk :refer [postwalk]]))
+(ns easy-rpc.web.encoding)
 
 (defn decode-bin
   [s]
@@ -64,4 +62,4 @@
 
 (defn decode-bytes
   [form]
-  (postwalk postwalk-decoder form))
+  (clojure.walk/postwalk postwalk-decoder form))

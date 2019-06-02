@@ -1,7 +1,8 @@
-(ns easy-rpc.http.server
+(ns easy-rpc.web.server
   (:require
     [clojure.edn :as edn]
     [clojure.java.io :as io]
+    [easy-rpc.web.encoding :as enc]
     [easy-rpc.util :as util]
     [org.httpkit.server :as http]
     [reitit.ring :as ring]))
@@ -10,22 +11,22 @@
   [rpc-handler]
     (ring/ring-handler
       (ring/router
-        [[ "/"
-          {:post {
-            :handler (fn [{msg :body}]
-              (try
-                {:status 200
-                 :body (-> msg
-                           .bytes
-                           util/deserialize
-                           rpc-handler
-                           util/serialize
-                           io/input-stream)}
-                (catch Throwable e
-                  {:status 500
-                   :body (-> e
-                             util/serialize
-                             io/input-stream )})))}}]])
+        [ ["/"
+            {:post {
+             :handler (fn [{msg :body}]
+               (let [bytes->str #(apply str (map char %))]
+                 (try
+                   {:status 200
+                    :body (-> msg
+                              .bytes
+                              bytes->str
+                              edn/read-string
+                              enc/decode-bytes
+                              rpc-handler
+                              str)}
+                   (catch Throwable e
+                     {:status 500
+                      :body (-> e str)}))))}}]])
       (ring/routes (ring/create-default-handler))))
 
 (defn start
@@ -35,12 +36,11 @@
         app (api rpc-handler)]
     (try
       (let [started-server (http/run-server app {:port port})]
-      (println "easy-rpc http server listening on" port)
+      (println "easy-rpc web server listening on" port)
       started-server)
       (catch Exception e
         (prn "ERROR:" e)
         (throw e)))))
-
 
 (defn stop!
   [server]
