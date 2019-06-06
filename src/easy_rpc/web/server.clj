@@ -1,9 +1,7 @@
 (ns easy-rpc.web.server
   (:require
     [clojure.edn :as edn]
-    [clojure.java.io :as io]
     [easy-rpc.web.encoding :as enc]
-    [easy-rpc.util :as util]
     [org.httpkit.server :as http]
     [reitit.ring :as ring]))
 

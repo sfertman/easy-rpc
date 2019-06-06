@@ -1,6 +1,5 @@
 (ns easy-rpc.http.server
   (:require
-    [clojure.edn :as edn]
     [clojure.java.io :as io]
     [easy-rpc.util :as util]
     [org.httpkit.server :as http]
