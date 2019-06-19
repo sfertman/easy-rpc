@@ -12,3 +12,7 @@ pom.xml.asc
 .hg/
 .lsp/
 .idea/
+.vscode/
+.settings/
+.project
+.classpath
