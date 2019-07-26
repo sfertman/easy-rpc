@@ -1,4 +1,7 @@
-(ns easy-rpc.web.encoding)
+(ns easy-rpc.web.encoding
+  (:require
+    [clojure.string]
+    [clojure.walk]))
 
 (defn decode-bin
   [s]
