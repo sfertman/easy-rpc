@@ -2,6 +2,8 @@
 
 Turn any Clojure api into a microservice<sup>*</sup>.
 
+[![Clojars Project](https://img.shields.io/clojars/v/easy-rpc.svg)](https://clojars.org/easy-rpc)
+
 ## Motivation
 
 So, I wrote a clojure library, `mylib`, that I use all over my codebase and now I want to make it a micro-service but I don't want to write too much api and client code and even more test code and I don't want to require overkill rpc frameworks and learn how to use any of them. And, what if one day I'll want to break out another lib into a microservice? More code to write, test and debug...
