@@ -16,7 +16,7 @@
     <url>https://github.com/sfertman/easy-rpc</url>
     <connection>scm:git:git://github.com/sfertman/easy-rpc.git</connection>
     <developerConnection>scm:git:ssh://git@github.com/sfertman/easy-rpc.git</developerConnection>
-    <tag>f319cfb9061616162635f6321217ad2986e340b9</tag>
+    <tag>ad1e1988fe86858a4f89de13089152c694405427</tag>
   </scm>
   <build>
     <sourceDirectory>src</sourceDirectory>
