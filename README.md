@@ -27,7 +27,7 @@ I wish making a server would be as easy as this:
 ### Client
 Ok, but now I needed a client libray. It would be nice if I didn't write anything and have it all magically work based on my server config. Maybe something like this:
 ```clojure
-(require '[easy-rpc.client :as rpc-client]))
+(require '[easy-rpc.client :refer [client]]))
 
 (def http-config {
   :ns "mylib"
@@ -36,20 +36,13 @@ Ok, but now I needed a client libray. It would be nice if I didn't write anythin
   :port 3000})
 ;; ^ looks familiar?
 
-(def http-client (rpc-client/create-client rpc-config))
-```
-Hmmm, using a clojure library is easy; I just call my functions like `(mylib/myfunc x y z)`. If only I could somehow not change (almost) anything about my code and still use a remote library:
-```clojure
-;; def an rpc call wrapper
-(defn mylib-rpc
-  [& args]
-  (apply (:send-message http-client) args))
+(def mylib-rpc (client http-config))
 
-;; find and replace every `mylib/<func-name>` with `mylib-rpc '<func-name>`
+;; Now find and replace every `mylib/<func-name>` with `mylib-rpc '<func-name>`
 ;; Examples:
 
-(mylib-rpc 'myfunc x y z)
-;(mylib/myfunc x y z)
+(mylib-rpc 'myfunc x y z) ;; <- new
+;(mylib/myfunc x y z) ;; <- old
 ```
 ### Web server
 Well, now that I have my service running and client apps using it, it would be nice if I could simply check what my functions are returning without hacking into my clojure client or server (each is one line of code, I know, but still):

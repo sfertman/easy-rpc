@@ -3,7 +3,7 @@
     [clojure.edn :as edn]
     [easy-rpc.web.encoding :refer [decode-hex]]
     [easy-rpc.server :as rpc-server]
-    [easy-rpc.client :as rpc-client]
+    [easy-rpc.client :as rpc-client :refer [client]]
     [example.mylib :as mylib]))
 
 (def rpc-config
@@ -19,11 +19,7 @@
 (def http-server (atom nil))
 (def web-server (atom nil))
 
-(def http-client (rpc-client/create-client (:http rpc-config)))
-
-(defn mylib-rpc
-  [& args]
-  (apply (:send-message http-client) args))
+(def mylib-rpc (client (:http rpc-config)))
 
 (defn -main
   [& args]
