@@ -19,14 +19,16 @@
       :api api
       :rpc-handler on-message)))
 
-(defn start
-  "Returns a started ring server; takes rpc server config"
-  [server]
-  (cond
-    (= :http (:transport server))
-      (http-server/start server)
-    (= :web (:transport server))
-      (web-server/start server)))
+
+(defn start!
+  "Creates anf starts rpc server using input config"
+  [config]
+  (let [ns-name (:ns config)
+        api (ns-publics (symbol ns-name))
+        server (assoc config :api api :rpc-handler on-message)]
+    (case (:transport server)
+      :http (http-server/start server)
+      :web (web-server/start server))))
 
 #_(defn stop!
   "Returns nil; takes a server and stops it"

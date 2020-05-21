@@ -1,4 +1,4 @@
-(defproject easy-rpc "0.2.0"
+(defproject easy-rpc "0.3.0"
   :description "Turn any Clojure api into a microservice accessible over the network"
   :license {
     :name "MIT"
@@ -8,5 +8,7 @@
     [org.clojure/clojure "1.9.0"]
     [com.taoensso/nippy "2.14.0"]
     [metosin/reitit-ring "0.3.1"]]
+  :plugins [
+    [lein-marginalia "0.9.1"]]
   :main example.core
   :aot [example.core])

@@ -12,9 +12,7 @@ So, I wrote a clojure library, `mylib`, that I use all over my codebase and now 
 ### Server (http)
 I wish making a server would be as easy as this:
 ```clojure
-(require '[easy-rpc.server :refer [create-server start]])
-
-(def server (atom nil))
+(require '[easy-rpc.server :as rpc-server])
 
 (def config {
   :ns "mylib"
@@ -22,12 +20,12 @@ I wish making a server would be as easy as this:
   :host "localhost"
   :port 3000})
 
-(reset! server (start (create-server config)))
+(rpc-server/start! config)
 ```
 ### Client
 Ok, but now I needed a client libray. It would be nice if I didn't write anything and have it all magically work based on my server config. Maybe something like this:
 ```clojure
-(require '[easy-rpc.client :refer [client]]))
+(require '[easy-rpc.client :as rpc-client]))
 
 (def http-config {
   :ns "mylib"
@@ -36,7 +34,7 @@ Ok, but now I needed a client libray. It would be nice if I didn't write anythin
   :port 3000})
 ;; ^ looks familiar?
 
-(def mylib-rpc (client http-config))
+(def mylib-rpc (rpc-client/client http-config))
 
 ;; Now find and replace every `mylib/<func-name>` with `mylib-rpc '<func-name>`
 ;; Examples:
@@ -55,9 +53,7 @@ Make web server:
   :transport :web ; <- note :web instead of :http
   :port 8080})
 
-(def web-server (atom nil))
-
-(run-server! web-server (start (create-server web-config)))
+(rpc-server/start! web-config)
 ```
 Send POST request to call functions:
 ```http
