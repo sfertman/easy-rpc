@@ -9,6 +9,4 @@
     [com.taoensso/nippy "2.14.0"]
     [metosin/reitit-ring "0.3.1"]]
   :plugins [
-    [lein-marginalia "0.9.1"]]
-  :main example.core
-  :aot [example.core])
+    [lein-marginalia "0.9.1"]])

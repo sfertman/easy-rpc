@@ -1,4 +1,4 @@
-(ns example.core
+(ns examples.core
   (:require
     [clojure.edn :as edn]
     [easy-rpc.web.encoding :refer [decode-hex]]
@@ -7,7 +7,7 @@
     [example.mylib :as mylib]))
 
 (def rpc-config
-  (-> "./src/example/rpc-config.edn" slurp edn/read-string))
+  (-> "./rpc-config.edn" slurp edn/read-string))
 
 (def mylib-rpc (rpc-client/client (:http rpc-config)))
 

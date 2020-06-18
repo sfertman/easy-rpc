@@ -1,4 +1,4 @@
-(ns example.mylib)
+(ns examples.mylib)
 
 (defn- private-minus
   [x y]

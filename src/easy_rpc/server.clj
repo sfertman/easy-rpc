@@ -21,7 +21,7 @@
 
 
 (defn start!
-  "Creates anf starts rpc server using input config"
+  "Creates and starts rpc server using input config"
   [config]
   (let [ns-name (:ns config)
         api (ns-publics (symbol ns-name))
