@@ -1,4 +1,4 @@
-(defproject easy-rpc "0.3.0"
+(defproject easy-rpc "0.4.0"
   :description "Turn any Clojure api into a microservice accessible over the network"
   :license {
     :name "MIT"
