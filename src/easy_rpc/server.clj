@@ -19,7 +19,6 @@
       :api api
       :rpc-handler on-message)))
 
-
 (defn start!
   "Creates and starts rpc server using input config"
   [config]
