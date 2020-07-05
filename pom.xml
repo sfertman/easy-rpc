@@ -3,7 +3,7 @@
   <groupId>easy-rpc</groupId>
   <artifactId>easy-rpc</artifactId>
   <packaging>jar</packaging>
-  <version>0.4.0</version>
+  <version>0.5.0</version>
   <name>easy-rpc</name>
   <description>Turn any Clojure api into a microservice accessible over the network</description>
   <licenses>
@@ -16,7 +16,7 @@
     <url>https://github.com/sfertman/easy-rpc</url>
     <connection>scm:git:git://github.com/sfertman/easy-rpc.git</connection>
     <developerConnection>scm:git:ssh://git@github.com/sfertman/easy-rpc.git</developerConnection>
-    <tag>d7b4d59c58df576ab7e41cf076ee6115af0eb458</tag>
+    <tag>2009d04ea11cb3b0b311980ffc6544107ea1661e</tag>
   </scm>
   <build>
     <sourceDirectory>src</sourceDirectory>
