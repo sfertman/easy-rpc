@@ -16,6 +16,7 @@
   (rpc-server/start! (:http rpc-config))
   (rpc-server/start! (:web rpc-config))
   (println "(mylib/minus 3 4)\n  =>" (mylib/minus 3 4))
+  (println "(mylib-rpc1/minus 3 4)\n  =>" (mylib-rpc1/minus 3 4))
   (println "(mylib-rpc 'minus 3 4)\n  =>" (mylib-rpc 'minus 3 4))
   (println "(mylib/mult 3 4)\n  =>" (mylib/mult 3 4))
   (println "(mylib-rpc 'mult 3 4)\n  =>" (mylib-rpc 'mult 3 4))
