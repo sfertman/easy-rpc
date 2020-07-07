@@ -21,6 +21,10 @@
 (defclient mylib-remote rpc-config)
 (clojure.pprint/pprint ((ns-aliases *ns*) 'mylib-remote))
 
+(defmacro try-throw-return
+  [form]
+  `(try ~form (catch Throwable e# e#)))
+
 (deftest examples
   (server/start! rpc-config)
   (testing "add alias"
@@ -31,11 +35,10 @@
             {:hello [(decode-hex "10948899abcdef")] :dont-byte "stringy-tring"})
           (mylib-added/bytes->hex-all
             {:hello [(decode-hex "10948899abcdef")] :dont-byte "stringy-tring"})))
-    (try
-      (mylib-added/div 3 0)
-      (is (= 1 0)) ;; will fail if exception not thrown
-      (catch RuntimeException re
-        (is (= 1 1)))))
+    (let [local-ex (try-throw-return (mylib-local/div 3 0))
+          added-ex (try-throw-return (mylib-added/div 3 0))]
+      (is (= (.getCause local-ex) (.getCause added-ex)))
+      (is (= (.getMessage local-ex) (.getMessage added-ex)))))
 
   (testing "override alias"
     (is (= (mylib-local/minus 3 4) (mylib-remote/minus 3 4)))
@@ -45,10 +48,8 @@
             {:hello [(decode-hex "10948899abcdef")] :dont-byte "stringy-tring"})
           (mylib-remote/bytes->hex-all
             {:hello [(decode-hex "10948899abcdef")] :dont-byte "stringy-tring"})))
-    (try
-      (mylib-remote/div 3 0)
-      (is (= 1 0)) ;; will fail if exception not thrown
-      (catch RuntimeException re
-        (is (= 1 1)))))
-)
+    (let [local-ex (try-throw-return (mylib-local/div 3 0))
+          remote-ex (try-throw-return (mylib-remote/div 3 0))]
+      (is (= (.getCause local-ex) (.getCause remote-ex)))
+      (is (= (.getMessage local-ex) (.getMessage remote-ex))))))
 

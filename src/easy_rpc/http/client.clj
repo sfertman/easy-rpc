@@ -9,12 +9,10 @@
 (defn send-message
   [config msg]
   (let [payload (-> msg util/serialize io/input-stream)
-        result (-> @(http/post (url config)
+        response @(http/post (url config)
                                {:as :stream
-                                :body payload}))]
-    (when (= 500 (:status result))
-      (throw (RuntimeException.
-        (str {
-          :payload msg
-          :error (-> result :body .bytes util/deserialize)}))))
-      (util/deserialize (.bytes (:body result)))))
+                                :body payload})
+        body (-> response :body .bytes util/deserialize)]
+    (if (= 500 (:status response))
+      (throw body))
+    body))
