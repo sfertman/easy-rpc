@@ -22,5 +22,16 @@
     (doseq [f# fs#]
       (intern rpc-ns#
               (symbol f#)
-              (fn [& args#] (apply rpc-client# f# args#))))
+              (partial rpc-client# f#)))
     (upsert-alias '~client-name rpc-client-ns-name#)))
+
+(defn defclient-fn
+  [client-name client-conf]
+  (let [rpc-client (client client-conf)
+        rpc-client-ns-name (gensym (str "easy-rpc.client$" client-name "__"))
+        rpc-ns (create-ns rpc-client-ns-name)
+        fs (keys (ns-publics (symbol (:ns ~client-conf))))]
+    (doseq [f fs]
+      (intern rpc-ns
+              (symbol f)
+              (partial rpc-client f)))))
