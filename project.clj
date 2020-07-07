@@ -1,5 +1,5 @@
-(defproject easy-rpc "0.5.0"
-  :description "Turn any Clojure api into a microservice accessible over the network"
+(defproject easy-rpc "0.6.0"
+  :description "Clojure rpc with one line of code"
   :license {
     :name "MIT"
     :url "https://opensource.org/licenses/mit-license.php"}
