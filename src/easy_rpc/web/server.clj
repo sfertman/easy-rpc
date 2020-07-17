@@ -53,7 +53,7 @@
 
 (defn start
   [server]
-  (let [rpc-handler (partial (:rpc-handler server) server)
+  (let [rpc-handler (partial (:rpc-handler server) (:api server))
         port (:port server)
         app (api rpc-handler)]
     (try

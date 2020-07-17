@@ -4,14 +4,11 @@
     [easy-rpc.web.server :as web-server]))
 
 (defn on-message
-  "Handles message by calling the api function. Throws NullPointerException if function f-name is not found in the rpc namespace."
-  [server [f-name args]]
-  (if-let [f (get (:api server) (symbol f-name))]
+  [api [f-name args]]
+  (if-let [f (get api (symbol f-name))]
     (apply f args)
     (throw (NullPointerException. (str "Function " f-name " is not defined!")))))
 
-(defn create-server
-  "Returns an rpc server config with lib functions attached"
 (defn api
   [config]
   (-> config :ns symbol ns-publics))
