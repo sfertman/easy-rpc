@@ -12,22 +12,18 @@
 
 (defn create-server
   "Returns an rpc server config with lib functions attached"
+(defn api
   [config]
-  (let [ns-name (:ns config)
-        api (ns-publics (symbol ns-name))]
-    (assoc config
-      :api api
-      :rpc-handler on-message)))
+  (-> config :ns symbol ns-publics))
 
-(defn start!
-  "Creates and starts rpc server using input config"
+(defmulti start! (fn [config] (:transport config)))
+(defmethod start! :http
   [config]
-  (let [ns-name (:ns config)
-        api (ns-publics (symbol ns-name))
-        server (assoc config :api api :rpc-handler on-message)]
-    (case (:transport server)
-      :http (http-server/start server)
-      :web (web-server/start server))))
+  (http-server/start (assoc config :api (api config) :rpc-handler on-message)))
+
+(defmethod start! :web
+  [config]
+  (web-server/start (assoc config :api (api config) :rpc-handler on-message)))
 
 #_(defn stop!
   "Returns nil; takes a server and stops it"
