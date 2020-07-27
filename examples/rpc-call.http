@@ -7,3 +7,8 @@ POST http://localhost:3102
 
 ["bytes->hex-all" [{:hello-bin ":b:bin::111111100100101100101111111001"
 :hello-hex ":b:hex::10093009908777abcdef0979823473928"}]]
+
+###
+POST http://localhost:3102
+
+["hi-p-crash" []]
