@@ -9,6 +9,6 @@
   [config]
   (http-server/start! config))
 
-#_(defmethod start! :web
+(defmethod start! :web
   [config]
-  (web-server/start config))
+  (web-server/start! config))
