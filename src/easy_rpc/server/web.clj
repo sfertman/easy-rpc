@@ -61,8 +61,3 @@
     (let [started-server (http/run-server app {:port port})]
       (println "easy-rpc web server listening on" port)
       started-server)))
-
-(defn stop!
-  [server]
-  ;; FIXME
-  42)
