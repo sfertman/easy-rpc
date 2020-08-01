@@ -13,7 +13,6 @@
   [config & args]
   (apply web-server/start! config args))
 
-
 (defn stop! [server]
   (when-not (nil? @server)
     (@server :timeout 100)
