@@ -3,15 +3,15 @@
     [easy-rpc.server.http :as http-server]
     [easy-rpc.server.web :as web-server]))
 
-(defmulti start! :transport)
+(defmulti start! (fn [cfg & _] (:transport cfg)))
 
 (defmethod start! :http
-  [config]
-  (http-server/start! config))
+  [config & args]
+  (apply http-server/start! config args))
 
 (defmethod start! :web
-  [config]
-  (web-server/start! config))
+  [config & args]
+  (apply web-server/start! config args))
 
 
 (defn stop! [server]
