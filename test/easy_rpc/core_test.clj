@@ -7,6 +7,8 @@
     [easy-rpc.mylib :as mylib-local]
     [easy-rpc.mylib :as mylib-remote]
     [easy-rpc.server.core :as server]
+    [easy-rpc.server.http :as http-server]
+    ;; FIXME: make a dedicated test for serrialization
     [easy-rpc.wire.edn :refer [decode-hex]]))
 
 (def rpc-config {
@@ -25,9 +27,16 @@
   [form]
   `(try ~form (catch Throwable e# e#)))
 
+(def srv (atom nil))
 (deftest examples
-  (server/start! rpc-config)
   (testing "add alias"
+    (reset!
+      srv
+      (server/start!
+        rpc-config
+        :serialization
+          [http-server/deserialized-body
+           http-server/serialized-body]))
     (is (= (mylib-local/minus 3 4) (mylib-added/minus 3 4)))
     (is (= (mylib-local/mult 3 4) (mylib-added/mult 3 4)))
     (is (= (mylib-local/div 3 2.5) (mylib-added/div 3 2.5)))
@@ -38,9 +47,10 @@
     (let [local-ex (try-catch-return (mylib-local/div 3 0))
           added-ex (try-catch-return (mylib-added/div 3 0))]
       (is (= (.getCause local-ex) (.getCause added-ex)))
-      (is (= (.getMessage local-ex) (.getMessage added-ex)))))
-
+      (is (= (.getMessage local-ex) (.getMessage added-ex))))
+    (server/stop! srv))
   (testing "override alias"
+    (reset! srv (server/start! rpc-config))
     (is (= (mylib-local/minus 3 4) (mylib-remote/minus 3 4)))
     (is (= (mylib-local/mult 3 4) (mylib-remote/mult 3 4)))
     (is (= (mylib-local/div 3 2.5) (mylib-remote/div 3 2.5)))
@@ -51,5 +61,6 @@
     (let [local-ex (try-catch-return (mylib-local/div 3 0))
           remote-ex (try-catch-return (mylib-remote/div 3 0))]
       (is (= (.getCause local-ex) (.getCause remote-ex)))
-      (is (= (.getMessage local-ex) (.getMessage remote-ex))))))
+      (is (= (.getMessage local-ex) (.getMessage remote-ex))))
+      (server/stop! srv)))
 
