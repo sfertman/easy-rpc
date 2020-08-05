@@ -16,11 +16,10 @@
 
 (defn send-message
   [config msg]
-  (let [payload (serialize-nippy msg)
-        response @(http/post (url config)
-                               {:as :stream
-                                :body payload})
-        body (-> response :body deserialize-nippy)]
+  (let [wire (or (:wire config) :default)
+        req {:as :stream :body (serialize wire msg)}
+        response @(http/post (url config) req)
+        body (deserialize wire (:body response))]
     (if (= 500 (:status response))
       (throw body))
     body))
