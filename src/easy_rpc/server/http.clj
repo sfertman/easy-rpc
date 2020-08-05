@@ -6,28 +6,6 @@
     [org.httpkit.server :as http]
     [reitit.ring :as ring]))
 
-(defn- deserialize-nippy
-  [bytes]
-  (deserialize :nippy bytes))
-
-(defn- serialize-nippy
-  [data]
-  (serialize :nippy data))
-
-(defn deserialized-body
-  [request]
-  (update
-    request
-    :body
-    (fn [x] (-> x .bytes deserialize-nippy))))
-
-(defn serialized-body
-  [response]
-  (update
-    response
-    :body
-    (fn [x] (-> x serialize-nippy io/input-stream))))
-
 (def wrap-serialization
   {:name ::wrap-serialization
    :description "Deserializes request body before handler and serializes response body after handler"
@@ -35,6 +13,28 @@
           (fn [request]
             (let [response (handler (deserialized-body request))]
               (serialized-body response))))})
+
+(defn- deserialize-nippy
+  [bytes]
+  (deserialize :nippy (.bytes bytes)))
+
+(defn- serialize-nippy
+  [data]
+  (io/input-stream (serialize :nippy data)))
+
+(defn deserialized-body
+  [request]
+  (update
+    request
+    :body
+    deserialize-nippy))
+
+(defn serialized-body
+  [response]
+  (update
+    response
+    :body
+    serialize-nippy))
 
 (defn api
   ([handler]

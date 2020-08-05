@@ -6,22 +6,21 @@
 
 (defn- deserialize-nippy
   [bytes]
-  (deserialize :nippy bytes))
+  (deserialize :nippy (.bytes bytes)))
 
 (defn- serialize-nippy
   [data]
-  (serialize :nippy data))
-;; FIXME: ^ serialization should be pluggable
+  (io/input-stream (serialize :nippy data)))
 
 (defn url [config] (str "http://" (:host config) ":" (:port config) "/"))
 
 (defn send-message
   [config msg]
-  (let [payload (-> msg serialize-nippy io/input-stream)
+  (let [payload (serialize-nippy msg)
         response @(http/post (url config)
                                {:as :stream
                                 :body payload})
-        body (-> response :body .bytes deserialize-nippy)]
+        body (-> response :body deserialize-nippy)]
     (if (= 500 (:status response))
       (throw body))
     body))
