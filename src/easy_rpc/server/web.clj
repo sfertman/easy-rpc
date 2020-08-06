@@ -4,30 +4,7 @@
     [easy-rpc.wire.core :refer [serialize deserialize]]
     [easy-rpc.server.http :as http]))
 
-(defn- deserialize-edn
-  [bytes]
-  (deserialize :edn bytes))
-
-(defn- serialize-edn
-  [data]
-  (serialize :edn data))
-
-(defn deserialized-body
-  [request]
-  (update
-    request
-    :body
-    (fn [x] (-> x .bytes deserialize-edn))))
-
-(defn serialized-body
-  [response]
-  (update
-    response
-    :body
-    (fn [x] (-> x serialize-edn))))
-
-(defn start! ;; FIXME: use new pluggable serialization here
-  [config
-   & {:keys [serialization]
-      :or {serialization [deserialized-body serialized-body]}}]
-  (http/start! config :serialization serialization))
+(defn start!
+  [config]
+  (http/start! (assoc config :serialization :edn)))
+  ;; NOTE: for now webserver will overwrite serialization with my custom made up one

@@ -78,6 +78,7 @@
 (defn deserialize
   [bytes]
   (-> bytes
+      .bytes
       bytes->str
       edn/read-string
       decode-bytes))
