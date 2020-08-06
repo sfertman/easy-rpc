@@ -3,7 +3,7 @@
   <groupId>easy-rpc</groupId>
   <artifactId>easy-rpc</artifactId>
   <packaging>jar</packaging>
-  <version>0.6.0</version>
+  <version>0.7.0</version>
   <name>easy-rpc</name>
   <description>Clojure rpc with one line of code</description>
   <licenses>
@@ -16,7 +16,7 @@
     <url>https://github.com/sfertman/easy-rpc</url>
     <connection>scm:git:git://github.com/sfertman/easy-rpc.git</connection>
     <developerConnection>scm:git:ssh://git@github.com/sfertman/easy-rpc.git</developerConnection>
-    <tag>fbbd122e983ad9a0762df4cb1154aaed8ba4b9b7</tag>
+    <tag>6cade4189e21164f3df49570b0837dbb16333f49</tag>
   </scm>
   <build>
     <sourceDirectory>src</sourceDirectory>
@@ -69,7 +69,7 @@
     <dependency>
       <groupId>org.clojure</groupId>
       <artifactId>clojure</artifactId>
-      <version>1.9.0</version>
+      <version>1.10.0</version>
     </dependency>
     <dependency>
       <groupId>com.taoensso</groupId>
