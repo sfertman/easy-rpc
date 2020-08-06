@@ -1,5 +1,6 @@
-(ns easy-rpc.web.encoding
+(ns easy-rpc.wire.edn
   (:require
+    [clojure.edn :as edn]
     [clojure.string]
     [clojure.walk]))
 
@@ -66,3 +67,18 @@
 (defn decode-bytes
   [form]
   (clojure.walk/postwalk postwalk-decoder form))
+
+(defn bytes->str
+  [bs]
+  (apply str (map char bs)))
+
+(defn serialize
+  [data] (str data))
+
+(defn deserialize
+  [bytes]
+  (-> bytes
+      .bytes
+      bytes->str
+      edn/read-string
+      decode-bytes))

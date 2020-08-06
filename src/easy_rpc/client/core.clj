@@ -1,11 +1,9 @@
-(ns easy-rpc.client
+(ns easy-rpc.client.core
   (:require
-    [easy-rpc.http.client :as http-client]))
+    [easy-rpc.client.http :as http]))
 
-(defn client
-  [cfg]
-  (fn [f & args]
-    (http-client/send-message cfg [f args])))
+(defmulti client :transport)
+(defmethod client :http [config] (http/client config))
 
 (defn upsert-alias
   [a ns-sym]
