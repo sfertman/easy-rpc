@@ -7,15 +7,14 @@
     [easy-rpc.mylib :as mylib-local]
     [easy-rpc.mylib :as mylib-remote]
     [easy-rpc.server.core :as server]
-    [easy-rpc.server.http :as http-server]
-    ;; FIXME: make a dedicated test for serrialization
     [easy-rpc.wire.edn :refer [decode-hex]]))
 
 (def rpc-config {
   :ns "easy-rpc.mylib"
   :host "localhost"
-  :transport :http
-  :port 3101})
+  :port 3101
+  :serialization :nippy
+  :transport :http})
 
 (defclient mylib-added rpc-config)
 
@@ -30,13 +29,7 @@
 (def srv (atom nil))
 (deftest examples
   (testing "add alias"
-    (reset!
-      srv
-      (server/start!
-        rpc-config
-        :serialization
-          [http-server/deserialized-body
-           http-server/serialized-body]))
+    (reset! srv (server/start! rpc-config))
     (is (= (mylib-local/minus 3 4) (mylib-added/minus 3 4)))
     (is (= (mylib-local/mult 3 4) (mylib-added/mult 3 4)))
     (is (= (mylib-local/div 3 2.5) (mylib-added/div 3 2.5)))

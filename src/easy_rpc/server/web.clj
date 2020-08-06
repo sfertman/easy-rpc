@@ -26,7 +26,7 @@
     :body
     (fn [x] (-> x serialize-edn))))
 
-(defn start!
+(defn start! ;; FIXME: use new pluggable serialization here
   [config
    & {:keys [serialization]
       :or {serialization [deserialized-body serialized-body]}}]
