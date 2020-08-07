@@ -2866,7 +2866,7 @@ net.brehaut.ClojureTools = (function (SH) {
   };
 })(SyntaxHighlighter);
 </script><title>easy-rpc -- Marginalia</title></head><body><table><tr><td class="docs"><div class="header"><h1 class="project-name">easy-rpc</h1><h2 class="project-version">0.7.0</h2><br /><p>Clojure rpc with one line of code</p>
-</div><div class="dependencies"><h3>dependencies</h3><table><tr><td class="dep-name">http-kit</td><td class="dotted"><hr /></td><td class="dep-version">2.3.0</td></tr><tr><td class="dep-name">org.clojure/clojure</td><td class="dotted"><hr /></td><td class="dep-version">1.10.0</td></tr><tr><td class="dep-name">com.taoensso/nippy</td><td class="dotted"><hr /></td><td class="dep-version">2.14.0</td></tr><tr><td class="dep-name">metosin/reitit-ring</td><td class="dotted"><hr /></td><td class="dep-version">0.3.1</td></tr></table></div></td><td class="codes" style="text-align: center; vertical-align: middle;color: #666;padding-right:20px"><br /><br /><br />(this space intentionally left almost blank)</td></tr><tr><td class="docs"><div class="toc"><a name="toc"><h3>namespaces</h3></a><ul><li><a href="#easy-rpc.wire.core">easy-rpc.wire.core</a></li><li><a href="#easy-rpc.wire.edn">easy-rpc.wire.edn</a></li><li><a href="#easy-rpc.wire.nippy">easy-rpc.wire.nippy</a></li><li><a href="#easy-rpc.client.core">easy-rpc.client.core</a></li><li><a href="#easy-rpc.client.http">easy-rpc.client.http</a></li><li><a href="#easy-rpc.server.handler">easy-rpc.server.handler</a></li><li><a href="#easy-rpc.server.web">easy-rpc.server.web</a></li><li><a href="#easy-rpc.server.core">easy-rpc.server.core</a></li><li><a href="#easy-rpc.server.http">easy-rpc.server.http</a></li></ul></div></td><td class="codes">&nbsp;</td></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#easy-rpc.wire.core" name="easy-rpc.wire.core"><h1 class="project-name">easy-rpc.wire.core</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs">
+</div><div class="dependencies"><h3>dependencies</h3><table><tr><td class="dep-name">http-kit</td><td class="dotted"><hr /></td><td class="dep-version">2.3.0</td></tr><tr><td class="dep-name">org.clojure/clojure</td><td class="dotted"><hr /></td><td class="dep-version">1.10.0</td></tr><tr><td class="dep-name">com.taoensso/nippy</td><td class="dotted"><hr /></td><td class="dep-version">2.14.0</td></tr><tr><td class="dep-name">metosin/reitit-ring</td><td class="dotted"><hr /></td><td class="dep-version">0.3.1</td></tr></table></div></td><td class="codes" style="text-align: center; vertical-align: middle;color: #666;padding-right:20px"><br /><br /><br />(this space intentionally left almost blank)</td></tr><tr><td class="docs"><div class="toc"><a name="toc"><h3>namespaces</h3></a><ul><li><a href="#easy-rpc.wire.core">easy-rpc.wire.core</a></li><li><a href="#easy-rpc.wire.edn">easy-rpc.wire.edn</a></li><li><a href="#easy-rpc.wire.nippy">easy-rpc.wire.nippy</a></li><li><a href="#easy-rpc.client.http">easy-rpc.client.http</a></li><li><a href="#easy-rpc.server">easy-rpc.server</a></li><li><a href="#easy-rpc.client">easy-rpc.client</a></li><li><a href="#easy-rpc.server.handler">easy-rpc.server.handler</a></li><li><a href="#easy-rpc.server.web">easy-rpc.server.web</a></li><li><a href="#easy-rpc.server.http">easy-rpc.server.http</a></li></ul></div></td><td class="codes">&nbsp;</td></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#easy-rpc.wire.core" name="easy-rpc.wire.core"><h1 class="project-name">easy-rpc.wire.core</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs">
 </td><td class="codes"><pre class="brush: clojure">(ns easy-rpc.wire.core
   (:require
     [easy-rpc.wire.edn :as edn]
@@ -2953,8 +2953,41 @@ net.brehaut.ClojureTools = (function (SH) {
     [clojure.java.io :as io]
     [taoensso.nippy :as nippy]))</pre></td></tr><tr><td class="docs">
 </td><td class="codes"><pre class="brush: clojure">(defn serialize [data] (-&gt; data nippy/freeze io/input-stream))
-(defn deserialize [bytes] (-&gt; bytes .bytes nippy/thaw))</pre></td></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#easy-rpc.client.core" name="easy-rpc.client.core"><h1 class="project-name">easy-rpc.client.core</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">(ns easy-rpc.client.core
+(defn deserialize [bytes] (-&gt; bytes .bytes nippy/thaw))</pre></td></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#easy-rpc.client.http" name="easy-rpc.client.http"><h1 class="project-name">easy-rpc.client.http</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(ns easy-rpc.client.http
+  (:require
+    [org.httpkit.client :as http]
+    [easy-rpc.wire.core :refer [serialize deserialize]]))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defn url [config] (str &quot;http://&quot; (:host config) &quot;:&quot; (:port config) &quot;/&quot;))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defn send-message
+  [config msg]
+  (let [wire (:serialization config)
+        req {:as :stream :body (serialize wire msg)}
+        response @(http/post (url config) req)
+        body (deserialize wire (:body response))]
+    (if (= 500 (:status response))
+      (throw body))
+    body))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defn client
+  [config]
+  (fn [f &amp; args]
+    (send-message config [f args])))</pre></td></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#easy-rpc.server" name="easy-rpc.server"><h1 class="project-name">easy-rpc.server</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(ns easy-rpc.server
+  (:require
+    [easy-rpc.server.http :as http-server]
+    [easy-rpc.server.web :as web-server]))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defmulti start! (fn [cfg &amp; _] (:transport cfg)))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defmethod start! :http
+  [config &amp; args]
+  (apply http-server/start! config args))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defmethod start! :web
+  [config &amp; args]
+  (apply web-server/start! config args))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defn stop! [server]
+  (when-not (nil? @server)
+    (@server :timeout 100)
+    (reset! server nil)))</pre></td></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#easy-rpc.client" name="easy-rpc.client"><h1 class="project-name">easy-rpc.client</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(ns easy-rpc.client
   (:require
     [easy-rpc.client.http :as http]))</pre></td></tr><tr><td class="docs">
 </td><td class="codes"><pre class="brush: clojure">(defmulti client :transport)
@@ -2984,25 +3017,7 @@ net.brehaut.ClojureTools = (function (SH) {
     (doseq [f fs]
       (intern rpc-ns
               (symbol f)
-              (partial rpc-client f)))))</pre></td></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#easy-rpc.client.http" name="easy-rpc.client.http"><h1 class="project-name">easy-rpc.client.http</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">(ns easy-rpc.client.http
-  (:require
-    [org.httpkit.client :as http]
-    [easy-rpc.wire.core :refer [serialize deserialize]]))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">(defn url [config] (str &quot;http://&quot; (:host config) &quot;:&quot; (:port config) &quot;/&quot;))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">(defn send-message
-  [config msg]
-  (let [wire (:serialization config)
-        req {:as :stream :body (serialize wire msg)}
-        response @(http/post (url config) req)
-        body (deserialize wire (:body response))]
-    (if (= 500 (:status response))
-      (throw body))
-    body))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">(defn client
-  [config]
-  (fn [f &amp; args]
-    (send-message config [f args])))</pre></td></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#easy-rpc.server.handler" name="easy-rpc.server.handler"><h1 class="project-name">easy-rpc.server.handler</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs">
+              (partial rpc-client f)))))</pre></td></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#easy-rpc.server.handler" name="easy-rpc.server.handler"><h1 class="project-name">easy-rpc.server.handler</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs">
 </td><td class="codes"><pre class="brush: clojure">(ns easy-rpc.server.handler)</pre></td></tr><tr><td class="docs">
 </td><td class="codes"><pre class="brush: clojure">(defn api
   [config]
@@ -3023,22 +3038,7 @@ net.brehaut.ClojureTools = (function (SH) {
 </td><td class="codes"><pre class="brush: clojure">(defn start!
   [config]
   (http/start! (assoc config :serialization :edn)))</pre></td></tr><tr><td class="docs"><p>NOTE: for now webserver will overwrite serialization with my custom made up one</p>
-</td><td class="codes"></td></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#easy-rpc.server.core" name="easy-rpc.server.core"><h1 class="project-name">easy-rpc.server.core</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">(ns easy-rpc.server.core
-  (:require
-    [easy-rpc.server.http :as http-server]
-    [easy-rpc.server.web :as web-server]))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">(defmulti start! (fn [cfg &amp; _] (:transport cfg)))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">(defmethod start! :http
-  [config &amp; args]
-  (apply http-server/start! config args))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">(defmethod start! :web
-  [config &amp; args]
-  (apply web-server/start! config args))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">(defn stop! [server]
-  (when-not (nil? @server)
-    (@server :timeout 100)
-    (reset! server nil)))</pre></td></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#easy-rpc.server.http" name="easy-rpc.server.http"><h1 class="project-name">easy-rpc.server.http</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs">
+</td><td class="codes"></td></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#easy-rpc.server.http" name="easy-rpc.server.http"><h1 class="project-name">easy-rpc.server.http</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs">
 </td><td class="codes"><pre class="brush: clojure">(ns easy-rpc.server.http
   (:require
     [easy-rpc.server.handler :refer [invoke-fn]]
@@ -3088,7 +3088,7 @@ net.brehaut.ClojureTools = (function (SH) {
         port (:port config)]
     (let [started-server (http/run-server app {:port port})]
       (println &quot;easy-rpc http server listening on&quot; port)
-      started-server)))</pre></td></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr></table><div class="footer">Generated by <a href="https://github.com/gdeer81/marginalia">Marginalia</a>.&nbsp;&nbsp;Syntax highlighting provided by Alex Gorbatchev's <a href="http://alexgorbatchev.com/SyntaxHighlighter/">SyntaxHighlighter</a><div id="floating-toc"><ul><li class="floating-toc-li" id="floating-toc_easy-rpc.wire.core">easy-rpc.wire.core</li><li class="floating-toc-li" id="floating-toc_easy-rpc.wire.edn">easy-rpc.wire.edn</li><li class="floating-toc-li" id="floating-toc_easy-rpc.wire.nippy">easy-rpc.wire.nippy</li><li class="floating-toc-li" id="floating-toc_easy-rpc.client.core">easy-rpc.client.core</li><li class="floating-toc-li" id="floating-toc_easy-rpc.client.http">easy-rpc.client.http</li><li class="floating-toc-li" id="floating-toc_easy-rpc.server.handler">easy-rpc.server.handler</li><li class="floating-toc-li" id="floating-toc_easy-rpc.server.web">easy-rpc.server.web</li><li class="floating-toc-li" id="floating-toc_easy-rpc.server.core">easy-rpc.server.core</li><li class="floating-toc-li" id="floating-toc_easy-rpc.server.http">easy-rpc.server.http</li></ul></div></div><script type="text/javascript">SyntaxHighlighter.defaults['gutter'] = false;
+      started-server)))</pre></td></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr></table><div class="footer">Generated by <a href="https://github.com/gdeer81/marginalia">Marginalia</a>.&nbsp;&nbsp;Syntax highlighting provided by Alex Gorbatchev's <a href="http://alexgorbatchev.com/SyntaxHighlighter/">SyntaxHighlighter</a><div id="floating-toc"><ul><li class="floating-toc-li" id="floating-toc_easy-rpc.wire.core">easy-rpc.wire.core</li><li class="floating-toc-li" id="floating-toc_easy-rpc.wire.edn">easy-rpc.wire.edn</li><li class="floating-toc-li" id="floating-toc_easy-rpc.wire.nippy">easy-rpc.wire.nippy</li><li class="floating-toc-li" id="floating-toc_easy-rpc.client.http">easy-rpc.client.http</li><li class="floating-toc-li" id="floating-toc_easy-rpc.server">easy-rpc.server</li><li class="floating-toc-li" id="floating-toc_easy-rpc.client">easy-rpc.client</li><li class="floating-toc-li" id="floating-toc_easy-rpc.server.handler">easy-rpc.server.handler</li><li class="floating-toc-li" id="floating-toc_easy-rpc.server.web">easy-rpc.server.web</li><li class="floating-toc-li" id="floating-toc_easy-rpc.server.http">easy-rpc.server.http</li></ul></div></div><script type="text/javascript">SyntaxHighlighter.defaults['gutter'] = false;
 SyntaxHighlighter.all();
 
 // hackity hack
