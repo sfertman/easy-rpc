@@ -18,7 +18,7 @@ So, I wrote a clojure library, `mylib`, that I use all over my codebase and now 
 All you need to create and start an rpc server is a simple config:
 
 ```clojure
-(require '[easy-rpc.server.core :as rpc-server])
+(require '[easy-rpc.server :as rpc-server])
 
 (def config {
   :ns "mylib"
@@ -40,7 +40,7 @@ where:
 
 On the client side things are just as simple. Use the same config from above to and pass it to `defclient` macro along with the name you want to use to invoke your rpc client:
 ```clojure
-(require '[easy-rpc.client.core :refer [defclient]]))
+(require '[easy-rpc.client :refer [defclient]]))
 
 (def http-config {
   :ns "mylib"

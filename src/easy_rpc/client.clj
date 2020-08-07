@@ -1,4 +1,4 @@
-(ns easy-rpc.client.core
+(ns easy-rpc.client
   (:require
     [easy-rpc.client.http :as http]))
 

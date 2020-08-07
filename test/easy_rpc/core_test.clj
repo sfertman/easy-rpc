@@ -2,11 +2,11 @@
   (:require
     [clojure.test :refer :all]
     [clojure.pprint :refer [pprint]]
-    [easy-rpc.client.core :refer [defclient]]
+    [easy-rpc.client :refer [defclient]]
     [easy-rpc.mylib :as mylib]
     [easy-rpc.mylib :as mylib-local]
     [easy-rpc.mylib :as mylib-remote]
-    [easy-rpc.server.core :as server]
+    [easy-rpc.server :as server]
     [easy-rpc.wire.edn :refer [decode-hex]]))
 
 (def rpc-config {
