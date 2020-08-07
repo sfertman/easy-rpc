@@ -3,7 +3,7 @@
   <groupId>easy-rpc</groupId>
   <artifactId>easy-rpc</artifactId>
   <packaging>jar</packaging>
-  <version>0.7.0</version>
+  <version>0.7.1</version>
   <name>easy-rpc</name>
   <description>Clojure rpc with one line of code</description>
   <licenses>
@@ -16,7 +16,7 @@
     <url>https://github.com/sfertman/easy-rpc</url>
     <connection>scm:git:git://github.com/sfertman/easy-rpc.git</connection>
     <developerConnection>scm:git:ssh://git@github.com/sfertman/easy-rpc.git</developerConnection>
-    <tag>f4ce6214685f677dd181ca82d7cccb5ab7ef6ddb</tag>
+    <tag>875fac67dab286bc3b1baf41e34329ee1c7447cd</tag>
   </scm>
   <build>
     <sourceDirectory>src</sourceDirectory>
