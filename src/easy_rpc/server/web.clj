@@ -1,7 +1,5 @@
 (ns easy-rpc.server.web
   (:require
-    [easy-rpc.server.handler :refer [invoke-fn]]
-    [easy-rpc.wire.core :refer [serialize deserialize]]
     [easy-rpc.server.http :as http]))
 
 (defn start!
