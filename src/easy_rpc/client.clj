@@ -1,5 +1,6 @@
 (ns easy-rpc.client
   (:require
+    [clojure.walk :refer [postwalk]]
     [easy-rpc.client.http :as http]))
 
 (defmulti client :transport)
@@ -11,25 +12,28 @@
     (ns-unalias *ns* a))
   (alias a ns-sym))
 
+(defn ns-fs [ns-sym] (keys (ns-publics (symbol ns-sym))))
+
+(defn quote-inputs [inputs] (postwalk #(if (symbol? %) `(quote ~%) %) inputs))
+
+(defn inputs->map [inputs] (apply hash-map (quote-inputs inputs)))
+
 (defmacro defclient
-  [client-name client-conf]
-  `(let [rpc-client# (client ~client-conf)
-         rpc-client-ns-name# (gensym (str "easy-rpc.client$" '~client-name "__"))
+  [client-name client-conf & inputs]
+  `(let [inputs# ~(inputs->map inputs)
+         lib-ns# (:ns ~client-conf)
+         as# '~client-name
+         refer# (get inputs# :refer)
+         rpc-client# (client ~client-conf)
+         rpc-client-ns-name# (gensym (str "easy-rpc.client$" as# "__"))
          rpc-ns# (create-ns rpc-client-ns-name#)
-         fs# (keys (ns-publics (symbol (:ns ~client-conf))))]
+         fs# (ns-fs lib-ns#)]
     (doseq [f# fs#]
       (intern rpc-ns#
               (symbol f#)
               (partial rpc-client# f#)))
-    (upsert-alias '~client-name rpc-client-ns-name#)))
-
-(defn defclient-fn
-  [client-name client-conf]
-  (let [rpc-client (client client-conf)
-        rpc-client-ns-name (gensym (str "easy-rpc.client$" client-name "__"))
-        rpc-ns (create-ns rpc-client-ns-name)
-        fs (keys (ns-publics (symbol (:ns ~client-conf))))]
-    (doseq [f fs]
-      (intern rpc-ns
-              (symbol f)
-              (partial rpc-client f)))))
+    (upsert-alias as# rpc-client-ns-name#)
+    (doseq [f# (filter (set refer#) fs#)]
+      (intern *ns*
+              (symbol f#)
+              (partial rpc-client# f#)))))

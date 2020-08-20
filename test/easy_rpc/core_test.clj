@@ -19,7 +19,7 @@
 (defclient mylib-added rpc-config)
 
 (clojure.pprint/pprint ((ns-aliases *ns*) 'mylib-remote))
-(defclient mylib-remote rpc-config)
+(defclient mylib-remote rpc-config :refer [minus])
 (clojure.pprint/pprint ((ns-aliases *ns*) 'mylib-remote))
 
 (defmacro try-catch-return
@@ -45,6 +45,7 @@
   (testing "override alias"
     (reset! srv (server/start! rpc-config))
     (is (= (mylib-local/minus 3 4) (mylib-remote/minus 3 4)))
+    (is (= (mylib-local/minus 3 4) (minus 3 4)))
     (is (= (mylib-local/mult 3 4) (mylib-remote/mult 3 4)))
     (is (= (mylib-local/div 3 2.5) (mylib-remote/div 3 2.5)))
     (is (= (mylib-local/bytes->hex-all
