@@ -6,34 +6,36 @@
 (defmulti client :transport)
 (defmethod client :http [config] (http/client config))
 
+(defn- quote-inputs [inputs] (postwalk #(if (symbol? %) `(quote ~%) %) inputs))
+
+(defn- inputs->map [inputs] (apply hash-map (quote-inputs inputs)))
+;; poor man's destructure
+
+(defn ns-fs [ns] (keys (ns-publics ns)))
+
+(defn intern-multi
+  [ns fs]
+  (doseq [[f-name f-def] fs]
+    (intern ns f-name f-def)))
+
+(defn fs-mappings [client fs] (for [f fs] [f (partial client f)]))
+
 (defn upsert-alias
   [a ns-sym]
   (if ((ns-aliases *ns*) a)
     (ns-unalias *ns* a))
   (alias a ns-sym))
 
-(defn ns-fs [ns-sym] (keys (ns-publics (symbol ns-sym))))
-
-(defn quote-inputs [inputs] (postwalk #(if (symbol? %) `(quote ~%) %) inputs))
-
-(defn inputs->map [inputs] (apply hash-map (quote-inputs inputs)))
-
 (defmacro defclient
   [client-name client-conf & inputs]
   `(let [inputs# ~(inputs->map inputs)
-         lib-ns# (:ns ~client-conf)
-         as# '~client-name
+         alias# '~client-name
          refer# (get inputs# :refer)
          rpc-client# (client ~client-conf)
-         rpc-client-ns-name# (gensym (str "easy-rpc.client$" as# "__"))
+         rpc-client-ns-name# (gensym (str "easy-rpc.client$" alias# "__"))
          rpc-ns# (create-ns rpc-client-ns-name#)
-         fs# (ns-fs lib-ns#)]
-    (doseq [f# fs#]
-      (intern rpc-ns#
-              (symbol f#)
-              (partial rpc-client# f#)))
-    (upsert-alias as# rpc-client-ns-name#)
-    (doseq [f# (filter (set refer#) fs#)]
-      (intern *ns*
-              (symbol f#)
-              (partial rpc-client# f#)))))
+         fs# (-> ~client-conf :ns symbol ns-fs)
+         fsm# (fs-mappings rpc-client# fs#)]
+    (intern-multi rpc-ns# fsm#)
+    (upsert-alias alias# rpc-client-ns-name#)
+    (intern-multi *ns* (filter #((set refer#) (first %)) fsm#))))
