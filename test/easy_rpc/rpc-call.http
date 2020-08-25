@@ -1,14 +1,17 @@
-POST http://localhost:3102
+@port=3102
+
+###
+POST http://localhost:{{port}}
 
 ["minus" [3 4]]
 
 ###
-POST http://localhost:3102
+POST http://localhost:{{port}}
 
 ["bytes->hex-all" [{:hello-bin ":b:bin::111111100100101100101111111001"
 :hello-hex ":b:hex::10093009908777abcdef0979823473928"}]]
 
 ###
-POST http://localhost:3102
+POST http://localhost:{{port}}
 
 ["hi-p-crash" []]

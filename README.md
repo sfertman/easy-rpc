@@ -61,6 +61,14 @@ and call your functions as if `mylib-rpc` was a namespace alias:
 (mylib-rpc/call-me ...) ;; remote calls are just as easy!
 ```
 
+If ns refers are used at the call site, `defclient` can also create refers to the remote function:
+```clojure
+(defclient mylib-rpc http-config :refer [call-me call-you])
+
+(call-me ...)
+(call-you ...)
+```
+
 ### Error handling
 If your function throws an exception, easy-rpc will catch that on the server side and re-throw it on the client side so your error handling remains the same. Thanks to nippy, we can serialize exceptions as well. The code below works the same whether `mylib/call-me` is local or remote.
 ```clojure
