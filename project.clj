@@ -1,4 +1,4 @@
-(defproject easy-rpc "0.7.1"
+(defproject easy-rpc "0.8.0"
   :description "Clojure rpc with one line of code"
   :license {
     :name "MIT"
