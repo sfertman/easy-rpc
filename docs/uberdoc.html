@@ -2865,7 +2865,7 @@ net.brehaut.ClojureTools = (function (SH) {
     build_tree: build_tree
   };
 })(SyntaxHighlighter);
-</script><title>easy-rpc -- Marginalia</title></head><body><table><tr><td class="docs"><div class="header"><h1 class="project-name">easy-rpc</h1><h2 class="project-version">0.7.0</h2><br /><p>Clojure rpc with one line of code</p>
+</script><title>easy-rpc -- Marginalia</title></head><body><table><tr><td class="docs"><div class="header"><h1 class="project-name">easy-rpc</h1><h2 class="project-version">0.8.0</h2><br /><p>Clojure rpc with one line of code</p>
 </div><div class="dependencies"><h3>dependencies</h3><table><tr><td class="dep-name">http-kit</td><td class="dotted"><hr /></td><td class="dep-version">2.3.0</td></tr><tr><td class="dep-name">org.clojure/clojure</td><td class="dotted"><hr /></td><td class="dep-version">1.10.0</td></tr><tr><td class="dep-name">com.taoensso/nippy</td><td class="dotted"><hr /></td><td class="dep-version">2.14.0</td></tr><tr><td class="dep-name">metosin/reitit-ring</td><td class="dotted"><hr /></td><td class="dep-version">0.3.1</td></tr></table></div></td><td class="codes" style="text-align: center; vertical-align: middle;color: #666;padding-right:20px"><br /><br /><br />(this space intentionally left almost blank)</td></tr><tr><td class="docs"><div class="toc"><a name="toc"><h3>namespaces</h3></a><ul><li><a href="#easy-rpc.wire.core">easy-rpc.wire.core</a></li><li><a href="#easy-rpc.wire.edn">easy-rpc.wire.edn</a></li><li><a href="#easy-rpc.wire.nippy">easy-rpc.wire.nippy</a></li><li><a href="#easy-rpc.client.http">easy-rpc.client.http</a></li><li><a href="#easy-rpc.server">easy-rpc.server</a></li><li><a href="#easy-rpc.client">easy-rpc.client</a></li><li><a href="#easy-rpc.server.handler">easy-rpc.server.handler</a></li><li><a href="#easy-rpc.server.web">easy-rpc.server.web</a></li><li><a href="#easy-rpc.server.http">easy-rpc.server.http</a></li></ul></div></td><td class="codes">&nbsp;</td></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#easy-rpc.wire.core" name="easy-rpc.wire.core"><h1 class="project-name">easy-rpc.wire.core</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs">
 </td><td class="codes"><pre class="brush: clojure">(ns easy-rpc.wire.core
   (:require
@@ -2989,35 +2989,37 @@ net.brehaut.ClojureTools = (function (SH) {
     (reset! server nil)))</pre></td></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#easy-rpc.client" name="easy-rpc.client"><h1 class="project-name">easy-rpc.client</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs">
 </td><td class="codes"><pre class="brush: clojure">(ns easy-rpc.client
   (:require
+    [clojure.walk :refer [postwalk]]
     [easy-rpc.client.http :as http]))</pre></td></tr><tr><td class="docs">
 </td><td class="codes"><pre class="brush: clojure">(defmulti client :transport)
 (defmethod client :http [config] (http/client config))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defn- quote-inputs [inputs] (postwalk #(if (symbol? %) `(quote ~%) %) inputs))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defn- inputs-&gt;map [inputs] (apply hash-map (quote-inputs inputs)))</pre></td></tr><tr><td class="docs"><p>poor man's destructure</p>
+</td><td class="codes"></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defn ns-fs [ns] (keys (ns-publics ns)))</pre></td></tr><tr><td class="docs"><p>Interns multiple mappings. <code>mappings</code> map var names to values to intern into target ns.</p>
+</td><td class="codes"><pre class="brush: clojure">(defn intern-multi
+  [ns-or-sym mappings]
+  (doseq [[name value] mappings]
+    (intern ns-or-sym name value)))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defn fs-mappings [client fs] (for [f fs] [f (partial client f)]))</pre></td></tr><tr><td class="docs">
 </td><td class="codes"><pre class="brush: clojure">(defn upsert-alias
   [a ns-sym]
   (if ((ns-aliases *ns*) a)
     (ns-unalias *ns* a))
   (alias a ns-sym))</pre></td></tr><tr><td class="docs">
 </td><td class="codes"><pre class="brush: clojure">(defmacro defclient
-  [client-name client-conf]
-  `(let [rpc-client# (client ~client-conf)
-         rpc-client-ns-name# (gensym (str &quot;easy-rpc.client$&quot; '~client-name &quot;__&quot;))
+  [client-name client-conf &amp; inputs]
+  `(let [inputs# ~(inputs-&gt;map inputs)
+         alias# '~client-name
+         refer# (get inputs# :refer)
+         rpc-client# (client ~client-conf)
+         rpc-client-ns-name# (gensym (str &quot;easy-rpc.client$&quot; alias# &quot;__&quot;))
          rpc-ns# (create-ns rpc-client-ns-name#)
-         fs# (keys (ns-publics (symbol (:ns ~client-conf))))]
-    (doseq [f# fs#]
-      (intern rpc-ns#
-              (symbol f#)
-              (partial rpc-client# f#)))
-    (upsert-alias '~client-name rpc-client-ns-name#)))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">(defn defclient-fn
-  [client-name client-conf]
-  (let [rpc-client (client client-conf)
-        rpc-client-ns-name (gensym (str &quot;easy-rpc.client$&quot; client-name &quot;__&quot;))
-        rpc-ns (create-ns rpc-client-ns-name)
-        fs (keys (ns-publics (symbol (:ns ~client-conf))))]
-    (doseq [f fs]
-      (intern rpc-ns
-              (symbol f)
-              (partial rpc-client f)))))</pre></td></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#easy-rpc.server.handler" name="easy-rpc.server.handler"><h1 class="project-name">easy-rpc.server.handler</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs">
+         fs# (-&gt; ~client-conf :ns symbol ns-fs)
+         fsm# (fs-mappings rpc-client# fs#)]
+    (intern-multi rpc-ns# fsm#)
+    (upsert-alias alias# rpc-client-ns-name#)
+    (intern-multi *ns* (filter #((set refer#) (first %)) fsm#))))</pre></td></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#easy-rpc.server.handler" name="easy-rpc.server.handler"><h1 class="project-name">easy-rpc.server.handler</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs">
 </td><td class="codes"><pre class="brush: clojure">(ns easy-rpc.server.handler)</pre></td></tr><tr><td class="docs">
 </td><td class="codes"><pre class="brush: clojure">(defn api
   [config]
@@ -3032,8 +3034,6 @@ net.brehaut.ClojureTools = (function (SH) {
     (throw (ex-fn-undefined f-name))))</pre></td></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#easy-rpc.server.web" name="easy-rpc.server.web"><h1 class="project-name">easy-rpc.server.web</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs">
 </td><td class="codes"><pre class="brush: clojure">(ns easy-rpc.server.web
   (:require
-    [easy-rpc.server.handler :refer [invoke-fn]]
-    [easy-rpc.wire.core :refer [serialize deserialize]]
     [easy-rpc.server.http :as http]))</pre></td></tr><tr><td class="docs">
 </td><td class="codes"><pre class="brush: clojure">(defn start!
   [config]
