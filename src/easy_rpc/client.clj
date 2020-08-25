@@ -14,9 +14,10 @@
 (defn ns-fs [ns] (keys (ns-publics ns)))
 
 (defn intern-multi
-  [ns fs]
-  (doseq [[f-name f-def] fs]
-    (intern ns f-name f-def)))
+  "Interns multiple mappings. `mappings` map var names to values to intern into target ns."
+  [ns-or-sym mappings]
+  (doseq [[name value] mappings]
+    (intern ns-or-sym name value)))
 
 (defn fs-mappings [client fs] (for [f fs] [f (partial client f)]))
 
